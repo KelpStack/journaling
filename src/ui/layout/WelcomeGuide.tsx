@@ -6,7 +6,7 @@ export interface WelcomeGuideProps {
 
 export function WelcomeGuide({ onDismiss }: WelcomeGuideProps) {
   const titleId = useId();
-  const [dontShowAgain, setDontShowAgain] = useState(false);
+  const [dontShowAgain, setDontShowAgain] = useState(true);
 
   return (
     <div className="welcome-guide" role="presentation">
