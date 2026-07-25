@@ -622,17 +622,16 @@ export function MorePage() {
           About
         </h2>
         <p className="more-help">
-          DiaryDeck is free to use and modify for non-commercial purposes under
-          the{" "}
+          DiaryDeck is free software under the{" "}
           <a
             className="more-inline-link"
-            href="https://polyformproject.org/licenses/noncommercial/1.0.0"
+            href="https://www.gnu.org/licenses/agpl-3.0.html"
             target="_blank"
             rel="noreferrer"
           >
-            PolyForm Noncommercial 1.0.0
-          </a>{" "}
-          license. Source is on{" "}
+            GNU Affero General Public License v3.0
+          </a>
+          . Source is on{" "}
           <a
             className="more-inline-link"
             href="https://github.com/KelpStack/journaling"

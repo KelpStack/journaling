@@ -2,7 +2,7 @@
 
 Phone-first offline journaling PWA with mix-and-match skins and content packs, calendar, streaks/stats, search, and Obsidian-friendly export.
 
-Licensed under [PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0) — free to use and modify for non-commercial purposes. See `LICENSE`.
+Licensed under [GNU Affero General Public License v3.0](https://www.gnu.org/licenses/agpl-3.0.html). See `LICENSE`.
 
 ## Run locally
 
