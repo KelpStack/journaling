@@ -1,0 +1,158 @@
+{
+  "id": "travel-log",
+  "name": "Travel Log",
+  "version": "1.0.0",
+  "description": "Sample travel journal showcasing random, long, short, yes/no, number, and checklist prompts.",
+  "hideFreeWrite": false,
+  "sections": [
+    {
+      "id": "reflection",
+      "title": "Daily Reflection",
+      "promptMode": "random",
+      "drawCount": 1,
+      "fields": [
+        {
+          "id": "street-food",
+          "label": "What was the most surprising flavor or street food dish you discovered while wandering the markets today?",
+          "type": "longText",
+          "required": true
+        },
+        {
+          "id": "cultural-site",
+          "label": "Which museum, exhibit, or cultural site left the biggest impression on you, and why?",
+          "type": "longText",
+          "required": true
+        },
+        {
+          "id": "small-detail",
+          "label": "What is one small, easily overlooked architectural or natural detail you noticed while exploring?",
+          "type": "longText",
+          "required": true
+        },
+        {
+          "id": "interaction",
+          "label": "Did you have a memorable interaction with a local or fellow traveler today?",
+          "type": "longText",
+          "required": true
+        },
+        {
+          "id": "transit",
+          "label": "What was the most challenging or humorous part of navigating a new transit system or neighborhood today?",
+          "type": "longText",
+          "required": true
+        },
+        {
+          "id": "take-it-in",
+          "label": "Describe a moment today where you simply stopped to take everything in.",
+          "type": "longText",
+          "required": true
+        }
+      ],
+      "pool": [
+        {
+          "id": "street-food",
+          "label": "What was the most surprising flavor or street food dish you discovered while wandering the markets today?",
+          "type": "longText",
+          "required": true
+        },
+        {
+          "id": "cultural-site",
+          "label": "Which museum, exhibit, or cultural site left the biggest impression on you, and why?",
+          "type": "longText",
+          "required": true
+        },
+        {
+          "id": "small-detail",
+          "label": "What is one small, easily overlooked architectural or natural detail you noticed while exploring?",
+          "type": "longText",
+          "required": true
+        },
+        {
+          "id": "interaction",
+          "label": "Did you have a memorable interaction with a local or fellow traveler today?",
+          "type": "longText",
+          "required": true
+        },
+        {
+          "id": "transit",
+          "label": "What was the most challenging or humorous part of navigating a new transit system or neighborhood today?",
+          "type": "longText",
+          "required": true
+        },
+        {
+          "id": "take-it-in",
+          "label": "Describe a moment today where you simply stopped to take everything in.",
+          "type": "longText",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "adventure",
+      "title": "Today's Adventure",
+      "promptMode": "fixed",
+      "fields": [
+        {
+          "id": "chronicle",
+          "label": "Chronicle today's main adventure: outline where you went, the unexpected detours you took, and the overall vibe of the day.",
+          "type": "longText",
+          "required": true
+        },
+        {
+          "id": "highlight",
+          "label": "The absolute highlight of today’s itinerary.",
+          "type": "shortText",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "check-in",
+      "title": "Trip Check-in",
+      "promptMode": "fixed",
+      "fields": [
+        {
+          "id": "budget",
+          "label": "Did you stick to your daily cash budget?",
+          "type": "yesNo",
+          "required": false,
+          "stats": true
+        },
+        {
+          "id": "comfort-zone",
+          "label": "Did you step outside of your comfort zone at any point?",
+          "type": "yesNo",
+          "required": false,
+          "stats": true
+        },
+        {
+          "id": "steps",
+          "label": "Total steps taken today.",
+          "type": "number",
+          "required": false,
+          "stats": true
+        },
+        {
+          "id": "day-rating",
+          "label": "Rating of the day from 1 to 10.",
+          "type": "number",
+          "required": false,
+          "min": 1,
+          "max": 10,
+          "stats": true
+        },
+        {
+          "id": "trip-admin",
+          "label": "Trip admin",
+          "type": "checklist",
+          "required": false,
+          "options": [
+            { "id": "backed-up-photos", "label": "Backed up photos" },
+            { "id": "logged-spending", "label": "Logged daily spending" },
+            { "id": "tried-something-new", "label": "Tried something new" }
+          ]
+        }
+      ]
+    }
+  ]
+}

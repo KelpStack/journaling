@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Skin CSS Reference</title>
+<style>
+  :root {
+    --skin-bg: #f4f7f9;
+    --skin-fg: #1a2b33;
+    --skin-accent: #3d6b7a;
+    --skin-muted: #6b8491;
+    --skin-font-display: system-ui, sans-serif;
+    --skin-font-body: system-ui, sans-serif;
+    --skin-surface-opacity: 0.9;
+    --skin-chrome-opacity: 0.92;
+    --skin-field-opacity: 0.95;
+    --skin-field-bg: rgb(from var(--skin-bg) r g b / var(--skin-field-opacity));
+    --skin-field-fg: var(--skin-fg);
+    --skin-field-border: color-mix(in srgb, var(--skin-muted) 35%, transparent);
+    --skin-entry-date-size: 1.05rem;
+    --skin-entry-date-weight: 600;
+    --skin-entry-date-family: var(--skin-font-display);
+    --skin-paper-line: 1.6rem;
+    --page-bg: #eef1f4;
+    --ink: #1c2530;
+    --panel: #ffffff;
+    --line: #d8dee3;
+    --mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    --badge: #b3542f;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--page-bg);
+    color: var(--ink);
+    padding: 1.25rem 1rem 3rem;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    margin: 0 0 0.25rem;
+  }
+  .intro {
+    color: #55606b;
+    font-size: 0.92rem;
+    max-width: 42rem;
+    margin: 0 0 1.5rem;
+    line-height: 1.5;
+  }
+
+  .setup-note {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--skin-accent);
+    border-radius: 0.5rem;
+    padding: 0.85rem 1rem;
+    margin: 0 0 1.75rem;
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+  .setup-note strong { color: var(--ink); }
+  .setup-note code {
+    font-family: var(--mono);
+    font-size: 0.85em;
+    background: #f1f0ec;
+    padding: 0.05em 0.35em;
+    border-radius: 0.3em;
+  }
+
+  /* --- mockup --- */
+  .mockup-wrap {
+    max-width: 26rem;
+    margin: 0 auto 2rem;
+  }
+  .mockup {
+    position: relative;
+    background: var(--skin-bg);
+    border-radius: 1.25rem;
+    border: 8px solid #20242b;
+    overflow: hidden;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+  }
+  .mockup__inner { position: relative; }
+
+  .region {
+    position: relative;
+  }
+  .badge {
+    position: absolute;
+    top: -0.5rem;
+    left: -0.5rem;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    background: var(--badge);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 2px #fff;
+    z-index: 5;
+  }
+  .region--outline { outline: 1.5px dashed color-mix(in srgb, var(--badge) 55%, transparent); outline-offset: 2px; }
+
+  .app-main { padding: 1rem 1rem 4.5rem; }
+  .entry-page { display: flex; flex-direction: column; gap: 1rem; }
+  .entry-header { display: flex; flex-direction: column; gap: 0.75rem; }
+  .entry-header__row { display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+  .entry-date-nav__arrow {
+    border: 1px solid color-mix(in srgb, var(--skin-muted) 35%, transparent);
+    background: var(--skin-bg); color: var(--skin-fg); border-radius: 0.5rem;
+    width: 2.25rem; height: 2.25rem; font: inherit;
+  }
+  .entry-date-nav__date {
+    font-family: var(--skin-entry-date-family); font-size: var(--skin-entry-date-size);
+    font-weight: var(--skin-entry-date-weight); color: var(--skin-fg);
+  }
+  .pack-tabs { display: flex; gap: 0.4rem; margin-top: 0.65rem; }
+  .pack-tabs__tab {
+    font: inherit; border: 1px solid color-mix(in srgb, var(--skin-muted) 35%, transparent);
+    border-radius: 0.5rem; padding: 0.35rem 0.75rem; background: var(--skin-bg);
+    color: var(--skin-fg); font-size: 0.78rem;
+  }
+  .pack-tabs__tab--active {
+    border-color: var(--skin-accent);
+    background: color-mix(in srgb, var(--skin-accent) 15%, var(--skin-bg));
+    color: var(--skin-accent);
+  }
+
+  .free-write, .pack-section {
+    border: 1px solid color-mix(in srgb, var(--skin-muted) 22%, transparent);
+    border-radius: 0.75rem;
+    background: rgb(from var(--skin-bg) r g b / var(--skin-surface-opacity));
+  }
+  .free-write { padding: 0.75rem; }
+  .pack-section__header { border-bottom: 1px solid color-mix(in srgb, var(--skin-muted) 20%, transparent); }
+  .pack-section__toggle {
+    width: 100%; display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem; border: 0; background: transparent; color: inherit; font: inherit;
+  }
+  .pack-section__chevron { color: var(--skin-accent); }
+  .pack-section__title { font-family: var(--skin-font-display); font-weight: 600; }
+  .pack-section__body { display: flex; flex-direction: column; gap: 0.9rem; padding: 0.75rem; }
+
+  .field { display: flex; flex-direction: column; gap: 0.35rem; }
+  .field-label-row { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+  .field-label { font-size: 0.85rem; font-weight: 600; }
+  .field-label__required { color: var(--skin-accent); margin-left: 0.15rem; }
+  .field-redraw { color: var(--skin-muted); font-size: 0.85rem; }
+
+  .field-input {
+    width: 100%; font: inherit; color: var(--skin-field-fg);
+    border: 1px solid var(--skin-field-border); border-radius: 0.5rem;
+    padding: 0.5rem 0.6rem; background: var(--skin-field-bg);
+  }
+  .field-input--textarea { min-height: 3.6rem; }
+  .field-input--free-write { min-height: 4.5rem; }
+
+  .yes-no-buttons { display: flex; gap: 0.5rem; }
+  .yes-no-btn {
+    font: inherit; border: 1px solid color-mix(in srgb, var(--skin-muted) 35%, transparent);
+    border-radius: 999px; padding: 0.35rem 0.85rem; background: var(--skin-bg); color: inherit; font-size: 0.85rem;
+  }
+  .yes-no-btn--active {
+    border-color: var(--skin-accent);
+    background: color-mix(in srgb, var(--skin-accent) 15%, var(--skin-bg));
+    color: var(--skin-accent);
+  }
+
+  .checklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+  .checklist__label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; }
+  .checklist__input { accent-color: var(--skin-accent); }
+
+  .entry-actions { display: flex; flex-direction: column; gap: 0.4rem; padding: 0.25rem 0 0; }
+  .entry-save-button {
+    width: 100%; font: inherit; font-size: 0.9rem; padding: 0.65rem; border: none;
+    border-radius: 0.75rem; background: var(--skin-accent); color: var(--skin-bg);
+  }
+  .entry-save-state, .entry-save-hint { margin: 0; font-size: 0.72rem; color: var(--skin-muted); text-align: center; }
+
+  .bottom-nav {
+    display: flex; justify-content: space-around; gap: 0.25rem;
+    padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+    background: rgb(from var(--skin-bg) r g b / var(--skin-chrome-opacity));
+    border-top: 1px solid color-mix(in srgb, var(--skin-muted) 35%, transparent);
+  }
+  .bottom-nav__link {
+    flex: 1; text-align: center; padding: 0.3rem; border-radius: 0.5rem;
+    color: var(--skin-muted); font-size: 0.68rem;
+  }
+  .bottom-nav__link--active {
+    color: var(--skin-accent);
+    background: color-mix(in srgb, var(--skin-accent) 12%, transparent);
+  }
+
+  /* --- legend --- */
+  .legend { max-width: 42rem; margin: 0 auto; display: flex; flex-direction: column; gap: 0.75rem; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 0.65rem;
+    padding: 0.9rem 1rem;
+  }
+  .card__head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.45rem; }
+  .card__num {
+    flex: 0 0 auto; width: 1.5rem; height: 1.5rem; border-radius: 50%;
+    background: var(--badge); color: #fff; font-size: 0.8rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card__title { font-weight: 700; font-size: 0.98rem; }
+  .card__desc { font-size: 0.87rem; color: #4a545e; line-height: 1.5; margin: 0 0 0.5rem; }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .tag {
+    font-family: var(--mono); font-size: 0.75rem; padding: 0.15rem 0.5rem;
+    border-radius: 0.35rem; white-space: nowrap;
+  }
+  .tag--var { background: #eaf1ef; color: #1f6b52; }
+  .tag--class { background: #eef1fb; color: #33468c; }
+  .tag--attr { background: #fbeee6; color: #a2531f; }
+  .watch {
+    margin-top: 0.55rem; font-size: 0.82rem; background: #fff6ea;
+    border: 1px solid #f0d8ab; border-radius: 0.4rem; padding: 0.5rem 0.65rem;
+    color: #7a5a17; line-height: 1.45;
+  }
+
+  h2.section-title {
+    max-width: 42rem; margin: 0 auto 0.75rem; font-size: 1rem;
+    color: #55606b; text-transform: uppercase; letter-spacing: 0.04em;
+  }
+</style>
+</head>
+<body>
+
+<h1>Skin CSS reference</h1>
+<p class="intro">
+  What each variable and class actually touches, so you're not guessing while
+  writing a skin's Custom CSS. Numbers on the mockup match the numbered cards
+  below.
+</p>
+
+<div class="setup-note">
+  <strong>Two tiers of variables.</strong> The first tier — palette, fonts,
+  opacity, background, custom assets — is set automatically from the editor's
+  form fields; you never declare these yourself. The second tier —
+  <code>--skin-paper-line</code>, <code>--skin-entry-date-*</code> — has a
+  sensible default but is only <em>meant</em> to be overridden by a skin's own
+  Custom CSS, in a <code>:root { ... }</code> block, the way the paper-recipe
+  skins already do.
+</div>
+
+<div class="mockup-wrap">
+  <div class="mockup">
+    <div class="mockup__inner">
+      <div class="app-main">
+        <div class="entry-page">
+
+          <div class="entry-header">
+            <div class="entry-header__row region region--outline">
+              <span class="badge">3</span>
+              <button class="entry-date-nav__arrow" type="button">&lt;</button>
+              <span class="entry-date-nav__date">Fri, 24 July</span>
+              <button class="entry-date-nav__arrow" type="button">&gt;</button>
+            </div>
+            <nav class="pack-tabs region region--outline">
+              <span class="badge">4</span>
+              <button class="pack-tabs__tab pack-tabs__tab--active" type="button">Daily</button>
+              <button class="pack-tabs__tab" type="button">Travel Log</button>
+            </nav>
+          </div>
+
+          <section class="pack-section">
+            <header class="pack-section__header region region--outline">
+              <span class="badge">6</span>
+              <button class="pack-section__toggle" type="button">
+                <span class="pack-section__chevron">&#9662;</span>
+                <span class="pack-section__title">Homework for Life</span>
+              </button>
+            </header>
+            <div class="pack-section__body">
+              <label class="field">
+                <span class="field-label-row">
+                  <span class="field-label">What surprised you? <span class="field-label__required">*</span></span>
+                  <span class="field-redraw">&#8635;</span>
+                </span>
+                <textarea class="field-input field-input--textarea"></textarea>
+              </label>
+              <label class="field">
+                <span class="field-label-row">
+                  <span class="field-label">Slept # hours?</span>
+                </span>
+                <input class="field-input field-input--short region region--outline" value="7.5" />
+                <span class="badge" style="position:relative; top:-1.2rem; left:0;">8</span>
+              </label>
+              <div class="region region--outline" style="padding-top:0.6rem;">
+                <span class="badge">10</span>
+                <span class="field-label" style="display:block;margin-bottom:0.3rem;">Celebrated a win today?</span>
+                <div class="yes-no-buttons">
+                  <button class="yes-no-btn yes-no-btn--active" type="button">Yes</button>
+                  <button class="yes-no-btn" type="button">No</button>
+                </div>
+              </div>
+              <div class="region region--outline" style="padding-top:0.4rem;">
+                <span class="badge">11</span>
+                <ul class="checklist">
+                  <li class="checklist__item"><label class="checklist__label"><input type="checkbox" class="checklist__input" checked />Moved my body</label></li>
+                  <li class="checklist__item"><label class="checklist__label"><input type="checkbox" class="checklist__input" />Called a friend</label></li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="free-write region region--outline">
+            <span class="badge">5</span>
+            <label class="field">
+              <span class="field-label-row region region--outline" style="position:relative;">
+                <span class="badge" style="top:-0.7rem;left:-0.7rem;">7</span>
+                <span class="field-label">Free write</span>
+              </span>
+              <textarea class="field-input field-input--textarea field-input--free-write region region--outline">Long day, good one.</textarea>
+              <span class="badge" style="position:relative; top:-2.2rem; left:0;">9</span>
+            </label>
+          </section>
+
+          <div class="entry-actions region region--outline">
+            <span class="badge">12</span>
+            <button class="entry-save-button" type="button">Save entry</button>
+            <p class="entry-save-state">Saved</p>
+            <p class="entry-save-hint">Autosaves as you type.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <nav class="bottom-nav region region--outline" style="position:relative;">
+        <span class="badge" style="top:-0.7rem;">2</span>
+        <span class="bottom-nav__link bottom-nav__link--active">Today</span>
+        <span class="bottom-nav__link">Calendar</span>
+        <span class="bottom-nav__link">Stats</span>
+        <span class="bottom-nav__link">Packs</span>
+        <span class="bottom-nav__link">More</span>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<h2 class="section-title">Reference</h2>
+<div class="legend">
+
+  <div class="card">
+    <div class="card__head"><span class="card__num">1</span><span class="card__title">Page background</span></div>
+    <p class="card__desc">The base colour and optional tiled/centered/cover image behind everything, on <code style="font-family:var(--mono)">body</code>.</p>
+    <div class="tag-row">
+      <span class="tag tag--var">--skin-bg</span>
+      <span class="tag tag--var">--skin-bg-image</span>
+      <span class="tag tag--var">--skin-bg-repeat</span>
+      <span class="tag tag--var">--skin-bg-position</span>
+      <span class="tag tag--var">--skin-bg-size</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__head"><span class="card__num">2</span><span class="card__title">Bottom nav</span></div>
+    <p class="card__desc">Today / Calendar / Stats / Packs / More. Translucency comes from the chrome opacity slider; active-tab colour is the accent.</p>
+    <div class="tag-row">
+      <span class="tag tag--var">--skin-chrome-opacity</span>
+      <span class="tag tag--var">--skin-accent</span>
+      <span class="tag tag--class">.bottom-nav</span>
+      <span class="tag tag--class">.bottom-nav__link</span>
+      <span class="tag tag--class">.bottom-nav__link--active</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__head"><span class="card__num">3</span><span class="card__title">Date header</span></div>
+    <p class="card__desc">The date text and its two arrow buttons. Font size/weight/family for the date itself are skin-definable, not set by the editor.</p>
+    <div class="tag-row">
+      <span class="tag tag--var">--skin-entry-date-size</span>
+      <span class="tag tag--var">--skin-entry-date-weight</span>
+      <span class="tag tag--var">--skin-entry-date-family</span>
+      <span class="tag tag--var">--skin-fg</span>
+      <span class="tag tag--class">.entry-date-nav</span>
+      <span class="tag tag--class">.entry-date-nav__arrow</span>
+      <span class="tag tag--class">.entry-date-nav__date</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__head"><span class="card__num">4</span><span class="card__title">Pack tabs</span></div>
+    <p class="card__desc">Only rendered when 2+ content packs are active — with one pack, this whole row doesn't exist in the DOM.</p>
+    <div class="tag-row">
+      <span class="tag tag--var">--skin-accent</span>
+      <span class="tag tag--var">--skin-bg</span>
+      <span class="tag tag--var">--skin-fg</span>
+      <span class="tag tag--class">.pack-tabs</span>
+      <span class="tag tag--class">.pack-tabs__tab</span>
+      <span class="tag tag--class">.pack-tabs__tab--active</span>
+    </div>
+    <div class="watch">Watch out: base CSS gives <code>.pack-tabs</code> its own <code>margin-top: 0.65rem</code>, separate from any gap on its parent. Easy to miss if you're trying to control vertical rhythm precisely.</div>
+  </div>
+
+  <div class="card">
+    <div class="card__head"><span class="card__num">5</span><span class="card__title">Free write / pack panels</span></div>
+    <p class="card__desc">The card-like containers for free write and each pack. Surface opacity controls how see-through they are over the page background. Free write renders after pack prompts when enabled.</p>
+    <div class="tag-row">
+      <span class="tag tag--var">--skin-surface-opacity</span>
+      <span class="tag tag--var">--skin-bg</span>
+      <span class="tag tag--var">--skin-muted</span>
+      <span class="tag tag--class">.free-write</span>
+      <span class="tag tag--class">.pack-section</span>
+      <span class="tag tag--class">.pack-section__section</span>
+      <span class="tag tag--attr">[data-panel-style]</span>
+    </div>
+    <div class="watch"><code>[data-panel-style]</code> is set on <code>&lt;html&gt;</code> from the Surface style dropdown — flat / card / sticky / paper all have real recipes now, keyed off this attribute, e.g. <code>[data-panel-style="paper"] .pack-section { ... }</code>.</div>
+  </div>
+
+  <div class="card">
+    <div class="card__head"><span class="card__num">6</span><span class="card__title">Section headers / toggles</span></div>
+    <p class="card__desc">The clickable title bar for a pack or a nested section within it (the chevron, the title text).</p>
+    <div class="tag-row">
+      <span class="tag tag--var">--skin-accent</span>
+      <span class="tag tag--var">--skin-font-display</span>
+      <span class="tag tag--class">.pack-section__header</span>
+      <span class="tag tag--class">.pack-section__toggle</span>
+      <span class="tag tag--class">.pack-section__title</span>
+      <span class="tag tag--class">.pack-section__chevron</span>
+      <span class="tag tag--class">.pack-section__section-header</span>
+      <span class="tag tag--class">.pack-section__section-toggle</span>
+      <span class="tag tag--class">.pack-section__section-title</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__head"><span class="card__num">7</span><span class="card__title">Field label</span></div>
+    <p class="card__desc">A prompt's label row — includes an optional required-mark and an optional shuffle-prompt button.</p>
+    <div class="tag-row">
+      <span class="tag tag--var">--skin-fg</span>
+      <span class="tag tag--var">--skin-accent</span>
+      <span class="tag tag--class">.field</span>
+      <span class="tag tag--class">.field-label-row</span>
+      <span class="tag tag--class">.field-label</span>
+      <span class="tag tag--class">.field-label__required</span>
+      <span class="tag tag--class">.field-redraw</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__head"><span class="card__num">8</span><span class="card__title">Short answers</span></div>
+    <p class="card__desc">Single-line text / date / number inputs.</p>
+    <div class="tag-row">
+      <span class="tag tag--var">--skin-field-bg</span>
+      <span class="tag tag--var">--skin-field-fg</span>
+      <span class="tag tag--var">--skin-field-border</span>
+      <span class="tag tag--var">--skin-field-opacity</span>
+      <span class="tag tag--class">.field-input</span>
+      <span class="tag tag--class">.field-input--short</span>
+      <span class="tag tag--class">.field-input--date</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__head"><span class="card__num">9</span><span class="card__title">Long answers</span></div>
+    <p class="card__desc">Free write and pack-section textareas. Same field vars as short answers, plus the ruled-line unit if a paper-style skin uses it.</p>
+    <div class="tag-row">
+      <span class="tag tag--var">--skin-field-bg</span>
+      <span class="tag tag--var">--skin-field-fg</span>
+      <span class="tag tag--var">--skin-field-border</span>
+      <span class="tag tag--var">--skin-paper-line</span>
+      <span class="tag tag--class">.field-input--textarea</span>
+      <span class="tag tag--class">.field-input--free-write</span>
+    </div>
+    <div class="watch">Both carry an HTML <code>rows=</code> attribute — a CSS <code>min-height</code> alone won't override that if the browser's own row calculation comes out taller; use <code>height</code> if you need an exact size.</div>
+  </div>
+
+  <div class="card">
+    <div class="card__head"><span class="card__num">10</span><span class="card__title">Yes / No buttons</span></div>
+    <p class="card__desc">Paired Yes / No controls for yesNo fields. Active state uses the accent colour.</p>
+    <div class="tag-row">
+      <span class="tag tag--var">--skin-accent</span>
+      <span class="tag tag--var">--skin-bg</span>
+      <span class="tag tag--class">.yes-no-buttons</span>
+      <span class="tag tag--class">.yes-no-btn</span>
+      <span class="tag tag--class">.yes-no-btn--active</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__head"><span class="card__num">11</span><span class="card__title">Checklist</span></div>
+    <p class="card__desc">Fixed option list for checklist fields. Checkbox accent colour follows <code>--skin-accent</code>.</p>
+    <div class="tag-row">
+      <span class="tag tag--var">--skin-accent</span>
+      <span class="tag tag--class">.checklist</span>
+      <span class="tag tag--class">.checklist__item</span>
+      <span class="tag tag--class">.checklist__label</span>
+      <span class="tag tag--class">.checklist__input</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__head"><span class="card__num">12</span><span class="card__title">Save button + status</span></div>
+    <p class="card__desc">Manual save control plus autosave status and hint text under the entry form.</p>
+    <div class="tag-row">
+      <span class="tag tag--var">--skin-accent</span>
+      <span class="tag tag--var">--skin-bg</span>
+      <span class="tag tag--var">--skin-muted</span>
+      <span class="tag tag--class">.entry-actions</span>
+      <span class="tag tag--class">.entry-save-button</span>
+      <span class="tag tag--class">.entry-save-state</span>
+      <span class="tag tag--class">.entry-save-hint</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__head"><span class="card__num">—</span><span class="card__title">Custom assets (not shown)</span></div>
+    <p class="card__desc">Every image you add in a skin's Custom assets list becomes its own variable, usable anywhere in that skin's Custom CSS — not fixed like the others above.</p>
+    <div class="tag-row"><span class="tag tag--var">--skin-asset-&lt;your-key&gt;</span></div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "Travel Log",
+  "version": "1.0.0",
+  "contentPackIds": ["travel-log"],
+  "activateOnImport": {
+    "contentPackIds": ["travel-log"]
+  }
+}

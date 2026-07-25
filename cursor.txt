@@ -1,0 +1,18 @@
+I want to make an app for a "homework for life" type of journal with additional features. 
+Before starting on the coding, please help me write a detailed plan first.
+
+I want something that:   
+- Can be quick to use (launch and start typing) 
+- have easily accessible record that is either in open format by default, or can be exported as such 
+- has a calendar and stats to track streak (gamify it a bit)  
+- can easily create back dated entries 
+- can schedule automatic backup 
+- have options to use a set of prompts, can choose between having 1-10 fixed prompt in set order, or 1-10 prompts selected randomly from a list 
+- allow tracking up to a few sets  (eg how much water drank, how many miles ran etc) and y/n question
+- for the prompts and number tracking, allow it to be set as mandatory (cannot move on from draft until answered) or optional. As well as long text, numeral, or y/n answer
+- for the stats, in addition to how often a journal was entered, also have stats for these y/n  and number fields 
+- support themeing - not just for the layout design, but also the prompts and stats tracking as well. Allow importing separately or in one file, as well as option to create the template in app.  
+- It should either work completely offline, or have the ability to cache record for syncing when it's back online.
+
+please review and suggest any room for improvement.
+I've created an empty folder for this project D:\Projects\Journaling
