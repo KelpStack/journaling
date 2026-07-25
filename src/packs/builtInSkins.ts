@@ -15,7 +15,7 @@ const OCEAN_WAVE_DATA_URL = `data:image/svg+xml;charset=utf-8,${encodeURICompone
 export const OCEAN_SKIN: Skin = {
   id: "ocean",
   name: "Ocean",
-  version: "2.1.0",
+  version: "2.1.1",
   tokens: {
     bg: "#0c2f45",
     fg: "#e7f3f8",
@@ -44,6 +44,17 @@ export const OCEAN_SKIN: Skin = {
   --skin-field-bg: rgb(from var(--skin-bg) r g b / var(--skin-field-opacity));
   --skin-field-fg: var(--skin-fg);
   --skin-field-border: color-mix(in srgb, var(--skin-fg) 18%, transparent);
+}
+
+body {
+  caret-color: var(--skin-accent);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid var(--skin-accent);
+  border-color: var(--skin-accent);
 }
 
 .free-write,
