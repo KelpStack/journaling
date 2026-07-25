@@ -102,7 +102,7 @@ describe("json import round-trip", () => {
     expect(result).toMatchObject({
       entriesImported: 1,
       entriesSkipped: 0,
-      packsImported: 1,
+      packsImported: 2,
       skinsImported: 2,
       settingsImported: true,
     });

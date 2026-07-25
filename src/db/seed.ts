@@ -2,6 +2,7 @@ import type { ProfileId } from "../domain/types";
 import { HFL_PACK } from "../packs/builtInPacks";
 import { OCEAN_SKIN } from "../packs/builtInSkins";
 import { HFL_SKIN } from "../packs/hflBuiltIn";
+import { TRAVEL_LOG_PACK } from "../packs/travelLogSample";
 import { putPack } from "./packsRepo";
 import { getSettings, saveSettings } from "./settingsRepo";
 import { putSkin } from "./skinsRepo";
@@ -13,6 +14,7 @@ import { putSkin } from "./skinsRepo";
  */
 export async function ensureSeeded(profileId: ProfileId): Promise<void> {
   await putPack(HFL_PACK);
+  await putPack(TRAVEL_LOG_PACK);
   await putSkin(HFL_SKIN);
   await putSkin(OCEAN_SKIN);
 
@@ -23,7 +25,7 @@ export async function ensureSeeded(profileId: ProfileId): Promise<void> {
 
   await saveSettings({
     profileId,
-    activeContentPackIds: ["hfl"],
+    activeContentPackIds: ["hfl", "travel-log"],
     activeSkinId: "ocean",
     backdateRepairsStreak: true,
     requireFreeWrite: false,

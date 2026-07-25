@@ -8,6 +8,7 @@ import type { ContentPack, ProfileSettings, Skin } from "../../domain/types";
 import { HFL_PACK, isBuiltInPack } from "../../packs/builtInPacks";
 import { isBuiltInSkin, OCEAN_SKIN } from "../../packs/builtInSkins";
 import { HFL_SKIN } from "../../packs/hflBuiltIn";
+import { TRAVEL_LOG_PACK } from "../../packs/travelLogSample";
 import { bundleZipFilename, exportBundleZip } from "../../packs/exportZip";
 import { importBundleZip } from "../../packs/importZip";
 import { applySkin } from "../skin/applySkin";
@@ -26,6 +27,7 @@ const BUILT_IN_SKINS: Record<string, Skin> = {
 
 const BUILT_IN_PACKS: Record<string, ContentPack> = {
   [HFL_PACK.id]: HFL_PACK,
+  [TRAVEL_LOG_PACK.id]: TRAVEL_LOG_PACK,
 };
 type EditorMode =
   | { kind: "none" }
@@ -245,6 +247,12 @@ export function PacksPage() {
 
   const savePack = async (pack: ContentPack) => {
     await putPack(pack);
+    if (settings && !settings.activeContentPackIds.includes(pack.id)) {
+      await saveSettings({
+        ...settings,
+        activeContentPackIds: [...settings.activeContentPackIds, pack.id],
+      });
+    }
     setEditor({ kind: "none" });
     await reload();
   };
@@ -474,14 +482,14 @@ export function PacksPage() {
           </li>
           <li className="packs-sample-list__item">
             <div className="packs-sample-list__copy">
-              <span className="packs-sample-list__name">Travel Log</span>
+              <span className="packs-sample-list__name">Media Tracker</span>
               <span className="packs-sample-list__meta">Prompt pack</span>
             </div>
             <button
               type="button"
               className="packs-btn"
               disabled={importing}
-              onClick={() => void importSample("travel-log.zip")}
+              onClick={() => void importSample("media-tracker.zip")}
             >
               {importing ? "Importing…" : "Import"}
             </button>

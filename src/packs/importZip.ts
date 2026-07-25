@@ -272,6 +272,7 @@ async function applyActivation(
   profileId: ProfileId,
   manifest: BundleManifest,
   importedSkins: Skin[],
+  importedPacks: ContentPack[],
 ): Promise<void> {
   const settings = await getSettings(profileId);
   if (!settings) {
@@ -293,12 +294,17 @@ async function applyActivation(
     changed = true;
   }
 
-  if (manifest.activateOnImport?.contentPackIds?.length) {
-    const ids = new Set([
-      ...settings.activeContentPackIds,
-      ...manifest.activateOnImport.contentPackIds,
-    ]);
-    updated.activeContentPackIds = [...ids];
+  // Enable every imported content pack (plus any explicit activateOnImport ids).
+  const packIds = new Set(settings.activeContentPackIds);
+  const beforePackCount = packIds.size;
+  for (const pack of importedPacks) {
+    packIds.add(pack.id);
+  }
+  for (const packId of manifest.activateOnImport?.contentPackIds ?? []) {
+    packIds.add(packId);
+  }
+  if (packIds.size !== beforePackCount) {
+    updated.activeContentPackIds = [...packIds];
     changed = true;
   }
 
@@ -337,7 +343,7 @@ export async function importBundleZip(
 
   const profileId = options.profileId ?? "local";
   if (options.applyActivation !== false) {
-    await applyActivation(profileId, manifest, skins);
+    await applyActivation(profileId, manifest, skins, packs);
   }
 
   return { manifest, skins, packs };

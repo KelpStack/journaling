@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { HFL_PACK } from "../packs/builtInPacks";
 import { OCEAN_SKIN } from "../packs/builtInSkins";
 import { HFL_SKIN } from "../packs/hflBuiltIn";
+import { TRAVEL_LOG_PACK } from "../packs/travelLogSample";
 import { db } from "./database";
 import { listPacks } from "./packsRepo";
 import { ensureSeeded } from "./seed";
@@ -69,7 +70,7 @@ describe("ensureSeeded", () => {
 
     expect(await getSettings("local")).toEqual({
       profileId: "local",
-      activeContentPackIds: ["hfl"],
+      activeContentPackIds: ["hfl", "travel-log"],
       activeSkinId: "ocean",
       backdateRepairsStreak: true,
       requireFreeWrite: false,
@@ -79,8 +80,9 @@ describe("ensureSeeded", () => {
       backupOnEdit: false,
     });
     const packs = await listPacks();
-    expect(packs).toHaveLength(1);
+    expect(packs).toHaveLength(2);
     expect(packs.find((p) => p.id === "hfl")).toEqual(HFL_PACK);
+    expect(packs.find((p) => p.id === "travel-log")).toEqual(TRAVEL_LOG_PACK);
     const skins = await listSkins();
     expect(skins).toHaveLength(2);
     expect(skins.find((s) => s.id === "hfl-minimal")).toEqual(HFL_SKIN);
@@ -91,7 +93,7 @@ describe("ensureSeeded", () => {
     await ensureSeeded("local");
     await ensureSeeded("local");
 
-    expect(await listPacks()).toHaveLength(1);
+    expect(await listPacks()).toHaveLength(2);
     expect(await listSkins()).toHaveLength(2);
   });
 
@@ -128,6 +130,7 @@ describe("ensureSeeded", () => {
 
     expect(await getSkin("hfl-minimal")).toEqual(HFL_SKIN);
     expect(await getPack("hfl")).toEqual(HFL_PACK);
+    expect(await getPack("travel-log")).toEqual(TRAVEL_LOG_PACK);
     expect(await getSkin("ocean")).toEqual(OCEAN_SKIN);
   });
 });

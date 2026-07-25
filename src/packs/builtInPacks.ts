@@ -87,7 +87,7 @@ export const HFL_PACK: ContentPack = {
 };
 
 /** Pack ids that are always upserted on launch and cannot be deleted. */
-export const BUILT_IN_PACK_IDS = new Set(["hfl"]);
+export const BUILT_IN_PACK_IDS = new Set(["hfl", "travel-log"]);
 
 export function isBuiltInPack(id: string): boolean {
   return BUILT_IN_PACK_IDS.has(id);

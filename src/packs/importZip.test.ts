@@ -29,6 +29,12 @@ const LINED_JOURNAL_ZIP_PATH = join(
   "samples",
   "lined-journal.zip",
 );
+const MEDIA_TRACKER_ZIP_PATH = join(
+  process.cwd(),
+  "public",
+  "samples",
+  "media-tracker.zip",
+);
 
 async function buildZip(
   rootName: string,
@@ -168,20 +174,33 @@ describe("importBundleZip", () => {
     expect(await listSkins()).toEqual([]);
   });
 
-  it("applies activateOnImport when requested", async () => {
+  it("activates an imported pack even without activateOnImport", async () => {
     await ensureSeeded("local");
+    await saveSettings({
+      ...(await getSettings("local"))!,
+      activeContentPackIds: ["hfl"],
+    });
+
+    const customPack: ContentPack = {
+      ...TRAVEL_LOG_PACK,
+      id: "custom-prompts",
+      name: "Custom Prompts",
+    };
     const zip = await buildZip(
-      "travel-log",
-      TRAVEL_LOG_BUNDLE_MANIFEST,
-      { pack: TRAVEL_LOG_PACK },
+      "custom-prompts",
+      {
+        name: "Custom Prompts",
+        version: "1.0.0",
+        contentPackIds: ["custom-prompts"],
+      },
+      { pack: customPack },
     );
 
-    await importBundleZip(zip, { profileId: "local", applyActivation: true });
+    await importBundleZip(zip, { profileId: "local" });
 
-    const settings = await getSettings("local");
-    expect(settings?.activeContentPackIds).toEqual(
-      expect.arrayContaining(["hfl", "travel-log"]),
-    );
+    expect(await getSettings("local")).toMatchObject({
+      activeContentPackIds: expect.arrayContaining(["hfl", "custom-prompts"]),
+    });
   });
 
   it("imports checked-in public/samples/travel-log.zip", async () => {
@@ -193,6 +212,17 @@ describe("importBundleZip", () => {
     const pack = await getPack("travel-log");
     expect(pack?.sections).toHaveLength(3);
     expect(pack?.sections[0]?.promptMode).toBe("random");
+  });
+
+  it("imports checked-in public/samples/media-tracker.zip", async () => {
+    const zip = readFileSync(MEDIA_TRACKER_ZIP_PATH);
+    const result = await importBundleZip(new Uint8Array(zip));
+
+    expect(result.packs.map((p) => p.id)).toContain("media-tracker");
+    expect(result.skins).toHaveLength(0);
+    const pack = await getPack("media-tracker");
+    expect(pack?.name).toMatch(/media/i);
+    expect(pack?.sections).toHaveLength(3);
   });
 
   it("imports checked-in public/samples/lined-journal.zip", async () => {
