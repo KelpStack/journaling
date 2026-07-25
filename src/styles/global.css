@@ -107,6 +107,101 @@ body {
   background: color-mix(in srgb, var(--skin-accent) 12%, transparent);
 }
 
+.welcome-guide {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  padding-bottom: calc(1rem + var(--bottom-nav-height) + var(--safe-bottom));
+}
+
+.welcome-guide__backdrop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--skin-fg) 45%, transparent);
+}
+
+.welcome-guide__panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 22.5rem);
+  max-height: min(80vh, 36rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1rem 1rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--skin-muted) 28%, transparent);
+  border-radius: 0.75rem;
+  background: rgb(from var(--skin-bg) r g b / 0.97);
+  color: var(--skin-fg);
+  box-shadow: 0 0.5rem 1.5rem color-mix(in srgb, var(--skin-fg) 18%, transparent);
+  overflow: auto;
+}
+
+.welcome-guide__title {
+  margin: 0;
+  font-family: var(--skin-font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.welcome-guide__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.welcome-guide__body p {
+  margin: 0;
+}
+
+.welcome-guide__body strong {
+  font-weight: 650;
+  color: var(--skin-fg);
+}
+
+.welcome-guide__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid color-mix(in srgb, var(--skin-muted) 22%, transparent);
+}
+
+.welcome-guide__ok {
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.5rem 0.95rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--skin-accent);
+  color: var(--skin-bg);
+  cursor: pointer;
+}
+
+.welcome-guide__dont-show {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+  font-size: 0.8rem;
+  color: var(--skin-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.welcome-guide__dont-show input {
+  accent-color: var(--skin-accent);
+}
+
 .stub-page {
   padding: 1rem 0;
 }

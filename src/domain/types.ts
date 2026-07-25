@@ -171,4 +171,6 @@ export interface ProfileSettings {
   lastBackupAt?: string;
   collapsedPackIds?: string[];
   lastToastedStreakMilestone?: number;
+  /** When true, the first-launch welcome guide is not shown again. */
+  hideWelcomeGuide?: boolean;
 }
