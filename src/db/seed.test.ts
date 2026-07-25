@@ -70,7 +70,7 @@ describe("ensureSeeded", () => {
     expect(await getSettings("local")).toEqual({
       profileId: "local",
       activeContentPackIds: ["hfl"],
-      activeSkinId: "hfl-minimal",
+      activeSkinId: "ocean",
       backdateRepairsStreak: true,
       requireFreeWrite: false,
       multiPackShowOneAtATime: true,

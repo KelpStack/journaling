@@ -4,7 +4,7 @@ import { maybeRunScheduledBackup } from "../../backup/schedule";
 import { ensureSeeded } from "../../db/seed";
 import { getSettings } from "../../db/settingsRepo";
 import { listSkins } from "../../db/skinsRepo";
-import { HFL_SKIN } from "../../packs/hflBuiltIn";
+import { OCEAN_SKIN } from "../../packs/builtInSkins";
 import { applySkin } from "../skin/applySkin";
 import { BottomNav } from "./BottomNav";
 
@@ -21,7 +21,7 @@ export function AppShell() {
       const settings = await getSettings(PROFILE_ID);
       const skins = await listSkins();
       const skin =
-        skins.find((item) => item.id === settings?.activeSkinId) ?? HFL_SKIN;
+        skins.find((item) => item.id === settings?.activeSkinId) ?? OCEAN_SKIN;
       applySkin(skin);
       void maybeRunScheduledBackup(PROFILE_ID);
       if (!cancelled) {

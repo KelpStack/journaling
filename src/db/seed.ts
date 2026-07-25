@@ -24,7 +24,7 @@ export async function ensureSeeded(profileId: ProfileId): Promise<void> {
   await saveSettings({
     profileId,
     activeContentPackIds: ["hfl"],
-    activeSkinId: "hfl-minimal",
+    activeSkinId: "ocean",
     backdateRepairsStreak: true,
     requireFreeWrite: false,
     multiPackShowOneAtATime: true,

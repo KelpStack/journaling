@@ -23,7 +23,7 @@ import { db } from "../../db/database";
 import { ensureSeeded } from "../../db/seed";
 import { listSkins } from "../../db/skinsRepo";
 import type { ProfileSettings } from "../../domain/types";
-import { HFL_SKIN } from "../../packs/hflBuiltIn";
+import { OCEAN_SKIN } from "../../packs/builtInSkins";
 import { applySkin } from "../skin/applySkin";
 
 const PROFILE_ID = "local";
@@ -120,7 +120,8 @@ export function MorePage() {
       const skins = await listSkins();
       const settingsAfter = await getSettings(PROFILE_ID);
       const skin =
-        skins.find((item) => item.id === settingsAfter?.activeSkinId) ?? HFL_SKIN;
+        skins.find((item) => item.id === settingsAfter?.activeSkinId) ??
+        OCEAN_SKIN;
       applySkin(skin);
       await reload();
       setDataMessage("All data deleted. Built-ins restored.");

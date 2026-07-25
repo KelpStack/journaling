@@ -53,7 +53,7 @@ describe("buildBackupPayload", () => {
     expect(payload.entries[0]?.date).toBe("2026-07-20");
     expect(payload.packs.some((pack) => pack.id === "hfl")).toBe(true);
     expect(payload.skins.some((skin) => skin.id === "hfl-minimal")).toBe(true);
-    expect(payload.settings?.activeSkinId).toBe("hfl-minimal");
+    expect(payload.settings?.activeSkinId).toBe("ocean");
   });
 });
 
@@ -112,7 +112,7 @@ describe("json import round-trip", () => {
     expect((await listPacks()).some((pack) => pack.id === "hfl")).toBe(true);
     expect((await listSkins()).some((skin) => skin.id === "hfl-minimal")).toBe(true);
     expect((await listSkins()).some((skin) => skin.id === "ocean")).toBe(true);
-    expect((await getSettings("local"))?.activeSkinId).toBe("hfl-minimal");
+    expect((await getSettings("local"))?.activeSkinId).toBe("ocean");
   });
 
   it("restores data from encrypted JSON with the correct passphrase", async () => {

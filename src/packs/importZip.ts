@@ -271,31 +271,40 @@ async function loadContentPack(
 async function applyActivation(
   profileId: ProfileId,
   manifest: BundleManifest,
+  importedSkins: Skin[],
 ): Promise<void> {
-  if (!manifest.activateOnImport) {
-    return;
-  }
-
   const settings = await getSettings(profileId);
   if (!settings) {
     return;
   }
 
   const updated = { ...settings };
+  let changed = false;
 
-  if (manifest.activateOnImport.skinId) {
-    updated.activeSkinId = manifest.activateOnImport.skinId;
+  // Prefer an explicit manifest skin; otherwise activate the last imported skin
+  // so uploading a theme switches to it immediately.
+  const skinId =
+    manifest.activateOnImport?.skinId ??
+    (importedSkins.length > 0
+      ? importedSkins[importedSkins.length - 1]!.id
+      : undefined);
+  if (skinId && updated.activeSkinId !== skinId) {
+    updated.activeSkinId = skinId;
+    changed = true;
   }
 
-  if (manifest.activateOnImport.contentPackIds?.length) {
+  if (manifest.activateOnImport?.contentPackIds?.length) {
     const ids = new Set([
       ...settings.activeContentPackIds,
       ...manifest.activateOnImport.contentPackIds,
     ]);
     updated.activeContentPackIds = [...ids];
+    changed = true;
   }
 
-  await saveSettings(updated);
+  if (changed) {
+    await saveSettings(updated);
+  }
 }
 
 export async function importBundleZip(
@@ -327,8 +336,8 @@ export async function importBundleZip(
   }
 
   const profileId = options.profileId ?? "local";
-  if (options.applyActivation !== false && manifest.activateOnImport) {
-    await applyActivation(profileId, manifest);
+  if (options.applyActivation !== false) {
+    await applyActivation(profileId, manifest, skins);
   }
 
   return { manifest, skins, packs };

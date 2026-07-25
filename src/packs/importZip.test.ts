@@ -14,7 +14,7 @@ import { db } from "../db/database";
 import { getPack, listPacks } from "../db/packsRepo";
 import { getSkin, listSkins, putSkin } from "../db/skinsRepo";
 import { ensureSeeded } from "../db/seed";
-import { getSettings } from "../db/settingsRepo";
+import { getSettings, saveSettings } from "../db/settingsRepo";
 import type { ContentPack, Skin } from "../domain/types";
 
 const TRAVEL_LOG_ZIP_PATH = join(
@@ -121,6 +121,36 @@ describe("importBundleZip", () => {
       expect.objectContaining({ id: "ocean" }),
     ]);
     expect(await listPacks()).toEqual([]);
+  });
+
+  it("activates an imported skin even without activateOnImport", async () => {
+    await ensureSeeded("local");
+    await saveSettings({
+      ...(await getSettings("local"))!,
+      activeSkinId: "hfl-minimal",
+    });
+
+    const customSkin: Skin = {
+      ...OCEAN_SKIN,
+      id: "sunset-theme",
+      name: "Sunset",
+      images: undefined,
+    };
+    const zip = await buildZip(
+      "sunset-theme",
+      {
+        name: "Sunset",
+        version: "1.0.0",
+        skinIds: ["sunset-theme"],
+      },
+      { skin: customSkin },
+    );
+
+    await importBundleZip(zip, { profileId: "local" });
+
+    expect(await getSettings("local")).toMatchObject({
+      activeSkinId: "sunset-theme",
+    });
   });
 
   it("registers content-only bundle without skin", async () => {

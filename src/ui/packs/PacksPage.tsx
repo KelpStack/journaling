@@ -64,7 +64,7 @@ export function PacksPage() {
 
     const activeSkin =
       loadedSkins.find((skin) => skin.id === loadedSettings.activeSkinId) ??
-      HFL_SKIN;
+      OCEAN_SKIN;
     applySkin(activeSkin);
 
     return { settings: loadedSettings, packs: loadedPacks, skins: loadedSkins };
@@ -101,7 +101,7 @@ export function PacksPage() {
     setSettings(next);
 
     const activeSkin =
-      skins.find((skin) => skin.id === next.activeSkinId) ?? HFL_SKIN;
+      skins.find((skin) => skin.id === next.activeSkinId) ?? OCEAN_SKIN;
     applySkin(activeSkin);
   };
 
@@ -251,6 +251,9 @@ export function PacksPage() {
 
   const saveSkin = async (skin: Skin) => {
     await putSkin(skin);
+    if (settings) {
+      await saveSettings({ ...settings, activeSkinId: skin.id });
+    }
     setEditor({ kind: "none" });
     await reload();
   };
@@ -271,8 +274,8 @@ export function PacksPage() {
       await deleteSkin(skin.id);
 
       if (settings.activeSkinId === skin.id) {
-        await saveSettings({ ...settings, activeSkinId: HFL_SKIN.id });
-        applySkin(HFL_SKIN);
+        await saveSettings({ ...settings, activeSkinId: OCEAN_SKIN.id });
+        applySkin(OCEAN_SKIN);
       }
 
       await reload();
