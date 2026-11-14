@@ -22,6 +22,9 @@ export function AppShell() {
 
     void (async () => {
       await ensureSeeded(PROFILE_ID);
+      if (navigator.storage?.persist) {
+        void navigator.storage.persist();
+      }
       const loaded = await getSettings(PROFILE_ID);
       const skins = await listSkins();
       const skin =

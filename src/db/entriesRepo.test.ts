@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { db } from "./database";
+import { db, JournalDB } from "./database";
 import { getOrCreateEntry, upsertEntry } from "./entriesRepo";
 
 beforeEach(async () => {
@@ -66,5 +66,18 @@ describe("upsertEntry", () => {
     await upsertEntry({ ...entry, body: "", answers: [] });
     expect(await db.entries.get(entry.id)).toBeUndefined();
     expect(await db.search.get(entry.id)).toBeUndefined();
+  });
+
+  it("keeps a saved entry after the database connection is closed and reopened", async () => {
+    const entry = await getOrCreateEntry("local", "2026-09-01");
+    await upsertEntry({ ...entry, body: "Still here" });
+    db.close();
+
+    const reopened = new JournalDB();
+    const loaded = await reopened.entries.get("local:2026-09-01");
+    expect(loaded?.body).toBe("Still here");
+    expect(loaded?.date).toBe("2026-09-01");
+    reopened.close();
+    await db.open();
   });
 });

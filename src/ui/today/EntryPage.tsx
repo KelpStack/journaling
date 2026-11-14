@@ -291,8 +291,16 @@ export function EntryPage() {
   }, [entry, fieldParam, settings]);
 
   useEffect(() => {
+    const flush = () => flushPendingSave();
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") flush();
+    };
+    window.addEventListener("pagehide", flush);
+    document.addEventListener("visibilitychange", onVisibility);
     return () => {
-      flushPendingSave();
+      flush();
+      window.removeEventListener("pagehide", flush);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
   }, [flushPendingSave]);
 
