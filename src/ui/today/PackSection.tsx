@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { RefreshCw } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
+import { List, RefreshCw } from "lucide-react";
 import { isChecklistAnswer } from "../../domain/completion";
 import { fieldsForSectionOnDay } from "../../domain/mergePacks";
 import { allPackFields, normalizePack, normalizePackPromptDraw } from "../../domain/normalizePack";
@@ -22,6 +22,7 @@ interface PackSectionProps {
   onToggleCollapse: () => void;
   onAnswerChange: (ref: string, value: AnswerValue | null) => void;
   onRedrawPrompt?: (sectionId: string) => void;
+  onChoosePrompt?: (sectionId: string, fieldId: string) => void;
 }
 
 function answerValue(entry: DailyEntry, ref: string): AnswerValue | null {
@@ -39,50 +40,151 @@ function hasAnswer(value: AnswerValue | null, type: PackField["type"]): boolean 
   return true;
 }
 
+function confirmClearAnswer(
+  value: AnswerValue | null,
+  type: PackField["type"],
+  message: string,
+): boolean {
+  if (!hasAnswer(value, type)) return true;
+  return window.confirm(message);
+}
+
 function FieldInput({
   field,
   fieldId,
   value,
   autoFocus,
-  showRedraw,
+  showPromptActions,
+  promptOptions,
+  selectedPromptId,
   onChange,
   onRedraw,
+  onChoosePrompt,
 }: {
   field: PackField;
   fieldId: string;
   value: AnswerValue | null;
   autoFocus?: boolean;
-  showRedraw?: boolean;
+  showPromptActions?: boolean;
+  promptOptions?: PackField[];
+  selectedPromptId?: string;
   onChange: (value: AnswerValue | null) => void;
   onRedraw?: () => void;
+  onChoosePrompt?: (fieldId: string) => void;
 }) {
+  const pickerId = useId();
+  const actionsRef = useRef<HTMLSpanElement>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  useEffect(() => {
+    if (!pickerOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (
+        actionsRef.current &&
+        event.target instanceof Node &&
+        !actionsRef.current.contains(event.target)
+      ) {
+        setPickerOpen(false);
+      }
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setPickerOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [pickerOpen]);
+
   const requiredMark = field.required ? (
     <span className="field-label__required" aria-hidden="true">
       *
     </span>
   ) : null;
 
-  const redrawButton =
-    showRedraw && onRedraw ? (
-      <button
-        type="button"
-        className="field-redraw"
-        aria-label="Draw a different prompt"
-        title="New prompt"
-        onClick={() => {
-          if (
-            hasAnswer(value, field.type) &&
-            !window.confirm(
-              "This prompt already has an answer. Redraw and clear it?",
-            )
-          ) {
-            return;
-          }
-          onRedraw();
-        }}
-      >
-        <RefreshCw size={15} strokeWidth={1.75} aria-hidden />
-      </button>
+  const promptActions =
+    showPromptActions && (onRedraw || onChoosePrompt) ? (
+      <span className="field-prompt-actions" ref={actionsRef}>
+        {onRedraw ? (
+          <button
+            type="button"
+            className="field-redraw"
+            aria-label="Draw a different prompt"
+            title="New prompt"
+            onClick={() => {
+              if (
+                !confirmClearAnswer(
+                  value,
+                  field.type,
+                  "This prompt already has an answer. Redraw and clear it?",
+                )
+              ) {
+                return;
+              }
+              setPickerOpen(false);
+              onRedraw();
+            }}
+          >
+            <RefreshCw size={15} strokeWidth={1.75} aria-hidden />
+          </button>
+        ) : null}
+        {onChoosePrompt && promptOptions && promptOptions.length > 0 ? (
+          <>
+            <button
+              type="button"
+              className="field-redraw"
+              aria-label="Choose from all prompts"
+              title="Choose prompt"
+              aria-expanded={pickerOpen}
+              aria-controls={pickerId}
+              onClick={() => setPickerOpen((open) => !open)}
+            >
+              <List size={15} strokeWidth={1.75} aria-hidden />
+            </button>
+            {pickerOpen ? (
+              <div id={pickerId} className="field-prompt-picker" role="listbox">
+                {promptOptions.map((option) => {
+                  const selected = option.id === selectedPromptId;
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      role="option"
+                      aria-selected={selected}
+                      className={
+                        selected
+                          ? "field-prompt-picker__option field-prompt-picker__option--active"
+                          : "field-prompt-picker__option"
+                      }
+                      onClick={() => {
+                        if (selected) {
+                          setPickerOpen(false);
+                          return;
+                        }
+                        if (
+                          !confirmClearAnswer(
+                            value,
+                            field.type,
+                            "This prompt already has an answer. Switch prompts and clear it?",
+                          )
+                        ) {
+                          return;
+                        }
+                        setPickerOpen(false);
+                        onChoosePrompt(option.id);
+                      }}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
+          </>
+        ) : null}
+      </span>
     ) : null;
 
   const labelRow = (labelText: string) => (
@@ -92,7 +194,7 @@ function FieldInput({
         {field.unit ? ` (${field.unit})` : ""}
         {requiredMark}
       </span>
-      {redrawButton}
+      {promptActions}
     </span>
   );
 
@@ -175,7 +277,7 @@ function FieldInput({
             {field.label}
             {requiredMark}
           </span>
-          {redrawButton}
+          {promptActions}
         </legend>
         <ul className="checklist">
           {options.map((option, index) => (
@@ -210,7 +312,7 @@ function FieldInput({
           {field.label}
           {requiredMark}
         </span>
-        {redrawButton}
+        {promptActions}
       </legend>
       <div className="yes-no-buttons">
         <button
@@ -252,6 +354,7 @@ function SectionPanel({
   onToggleCollapse,
   onAnswerChange,
   onRedrawPrompt,
+  onChoosePrompt,
 }: {
   section: PackSectionDef;
   packId: string;
@@ -262,9 +365,14 @@ function SectionPanel({
   onToggleCollapse: () => void;
   onAnswerChange: (ref: string, value: AnswerValue | null) => void;
   onRedrawPrompt?: (sectionId: string) => void;
+  onChoosePrompt?: (sectionId: string, fieldId: string) => void;
 }) {
   const fields = fieldsForSectionOnDay(section, packDraw[section.id]);
-  const canRedraw = section.promptMode === "random" && !!onRedrawPrompt;
+  const canActOnPrompt =
+    section.promptMode === "random" && (!!onRedrawPrompt || !!onChoosePrompt);
+  const promptOptions =
+    section.promptMode === "random" ? (section.pool ?? section.fields) : [];
+  const selectedPromptId = packDraw[section.id]?.[0];
 
   return (
     <div className="pack-section__section">
@@ -292,10 +400,17 @@ function SectionPanel({
                 fieldId={`field-${ref}`}
                 value={answerValue(entry, ref)}
                 autoFocus={autoFocusFirst && index === 0}
-                showRedraw={canRedraw && index === 0}
+                showPromptActions={canActOnPrompt && index === 0}
+                promptOptions={promptOptions}
+                selectedPromptId={selectedPromptId}
                 onChange={(next) => onAnswerChange(ref, next)}
                 onRedraw={
                   onRedrawPrompt ? () => onRedrawPrompt(section.id) : undefined
+                }
+                onChoosePrompt={
+                  onChoosePrompt
+                    ? (fieldId) => onChoosePrompt(section.id, fieldId)
+                    : undefined
                 }
               />
             );
@@ -331,6 +446,7 @@ export function PackSection({
   onToggleCollapse,
   onAnswerChange,
   onRedrawPrompt,
+  onChoosePrompt,
 }: PackSectionProps) {
   const pack = normalizePack(rawPack);
   const packDraw = normalizePackPromptDraw(pack, entry.promptDraw[pack.id] as unknown);
@@ -424,6 +540,7 @@ export function PackSection({
                 onToggleCollapse={() => toggleSectionCollapse(section.id)}
                 onAnswerChange={onAnswerChange}
                 onRedrawPrompt={onRedrawPrompt}
+                onChoosePrompt={onChoosePrompt}
               />
             );
           })}

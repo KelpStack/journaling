@@ -69,6 +69,45 @@ export function redrawPromptDraw(
   };
 }
 
+/**
+ * Sets a specific pool prompt for a random section (manual pick).
+ * Clears answers for previously drawn fields in that section.
+ */
+export function choosePromptDraw(
+  entry: DailyEntry,
+  pack: ContentPack,
+  sectionId: string,
+  fieldId: string,
+): DailyEntry {
+  const normalized = normalizePack(pack);
+  const section = normalized.sections.find((s) => s.id === sectionId);
+  if (!section || section.promptMode !== "random") {
+    return entry;
+  }
+
+  const pool = section.pool ?? section.fields;
+  if (!pool.some((field) => field.id === fieldId)) {
+    return entry;
+  }
+
+  const packDraw = normalizePackPromptDraw(pack, entry.promptDraw[pack.id]);
+  const previous = packDraw[sectionId] ?? [];
+  if (previous.length === 1 && previous[0] === fieldId) {
+    return entry;
+  }
+
+  const dropRefs = new Set(previous.map((id) => fieldRef(pack.id, id)));
+
+  return {
+    ...entry,
+    promptDraw: {
+      ...entry.promptDraw,
+      [pack.id]: { ...packDraw, [sectionId]: [fieldId] },
+    },
+    answers: entry.answers.filter((answer) => !dropRefs.has(answer.fieldRef)),
+  };
+}
+
 function drawFieldIdsForSection(
   packId: string,
   section: PackSection,

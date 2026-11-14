@@ -17,7 +17,7 @@ beforeEach(async () => {
 
 describe("HFL built-in constants", () => {
   it("HFL has reflection + check-in sections", () => {
-    expect(HFL_PACK.version).toBe("3.0.0");
+    expect(HFL_PACK.version).toBe("3.1.0");
     expect(HFL_PACK.sections).toHaveLength(2);
     expect(HFL_PACK.sections[0]).toMatchObject({
       id: "reflection",

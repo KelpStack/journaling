@@ -634,6 +634,14 @@ body {
   padding: 0;
 }
 
+.field-prompt-actions {
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
 .field-redraw {
   flex: 0 0 auto;
   display: inline-flex;
@@ -647,9 +655,54 @@ body {
   cursor: pointer;
 }
 
-.field-redraw:hover {
+.field-redraw:hover,
+.field-redraw[aria-expanded="true"] {
   color: var(--skin-accent);
   background: color-mix(in srgb, var(--skin-accent) 12%, transparent);
+}
+
+.field-prompt-picker {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  right: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  width: min(18rem, calc(100vw - 2.5rem));
+  max-height: 14rem;
+  overflow: auto;
+  padding: 0.35rem;
+  border: 1px solid color-mix(in srgb, var(--skin-muted) 30%, transparent);
+  border-radius: 0.55rem;
+  background: rgb(from var(--skin-bg) r g b / 0.98);
+  box-shadow: 0 0.35rem 1rem color-mix(in srgb, var(--skin-fg) 16%, transparent);
+}
+
+.field-prompt-picker__option {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0.45rem 0.55rem;
+  border: none;
+  border-radius: 0.4rem;
+  background: transparent;
+  color: var(--skin-fg);
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+
+.field-prompt-picker__option:hover {
+  background: color-mix(in srgb, var(--skin-accent) 12%, transparent);
+}
+
+.field-prompt-picker__option--active {
+  background: color-mix(in srgb, var(--skin-accent) 18%, transparent);
+  color: var(--skin-accent);
+  font-weight: 600;
 }
 
 .field-label__required {

@@ -10,7 +10,7 @@ import { applyEntrySnapshot } from "../../domain/entrySnapshot";
 import { parseFieldRef } from "../../domain/fieldRef";
 import { shouldHideFreeWrite } from "../../domain/mergePacks";
 import { normalizePack } from "../../domain/normalizePack";
-import { redrawPromptDraw } from "../../domain/randomDraw";
+import { choosePromptDraw, redrawPromptDraw } from "../../domain/randomDraw";
 import type { AnswerValue, ContentPack, DailyEntry, ProfileSettings } from "../../domain/types";
 import { EntryDateNav } from "./EntryDateNav";
 import { PackSection } from "./PackSection";
@@ -333,6 +333,16 @@ export function EntryPage() {
     updateEntry((current) => redrawPromptDraw(current, pack, sectionId));
   };
 
+  const handleChoosePrompt = (
+    pack: ContentPack,
+    sectionId: string,
+    fieldId: string,
+  ) => {
+    updateEntry((current) =>
+      choosePromptDraw(current, pack, sectionId, fieldId),
+    );
+  };
+
   const handleManualSave = () => {
     if (saveTimerRef.current) {
       clearTimeout(saveTimerRef.current);
@@ -419,6 +429,12 @@ export function EntryPage() {
           onRedrawPrompt={
             normalizePack(pack).sections.some((s) => s.promptMode === "random")
               ? (sectionId) => handleRedraw(pack, sectionId)
+              : undefined
+          }
+          onChoosePrompt={
+            normalizePack(pack).sections.some((s) => s.promptMode === "random")
+              ? (sectionId, fieldId) =>
+                  handleChoosePrompt(pack, sectionId, fieldId)
               : undefined
           }
         />

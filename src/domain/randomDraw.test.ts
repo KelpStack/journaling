@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { ensurePromptDraw, redrawPromptDraw } from "./randomDraw";
+import {
+  choosePromptDraw,
+  ensurePromptDraw,
+  redrawPromptDraw,
+} from "./randomDraw";
 import type { ContentPack, DailyEntry, PackField } from "./types";
 
 function field(id: string): PackField {
@@ -210,5 +214,59 @@ describe("redrawPromptDraw", () => {
     expect(next.promptDraw.mixed?.random).toHaveLength(2);
     expect(next.promptDraw.mixed?.random).not.toEqual(["a", "b"]);
     expect(next.answers).toEqual([{ fieldRef: "mixed:x", value: "keep extra x" }]);
+  });
+});
+
+describe("choosePromptDraw", () => {
+  it("sets the chosen field and clears answers for the previous draw", () => {
+    const entry = baseEntry({
+      promptDraw: { prompts: { main: ["a"] } },
+      answers: [
+        { fieldRef: "prompts:a", value: "old answer" },
+        { fieldRef: "other:x", value: "keep" },
+      ],
+    });
+    const singleDrawPack: ContentPack = {
+      ...randomPack,
+      sections: [
+        {
+          id: "main",
+          title: "Prompts",
+          promptMode: "random",
+          fields: [],
+          pool: [field("a"), field("b"), field("c")],
+          drawCount: 1,
+        },
+      ],
+    };
+
+    const next = choosePromptDraw(entry, singleDrawPack, "main", "c");
+
+    expect(next.promptDraw.prompts?.main).toEqual(["c"]);
+    expect(next.answers).toEqual([{ fieldRef: "other:x", value: "keep" }]);
+  });
+
+  it("no-ops when the chosen field is already the only drawn prompt", () => {
+    const entry = baseEntry({
+      promptDraw: { prompts: { main: ["b"] } },
+      answers: [{ fieldRef: "prompts:b", value: "keep" }],
+    });
+    const singleDrawPack: ContentPack = {
+      ...randomPack,
+      sections: [
+        {
+          id: "main",
+          title: "Prompts",
+          promptMode: "random",
+          fields: [],
+          pool: [field("a"), field("b"), field("c")],
+          drawCount: 1,
+        },
+      ],
+    };
+
+    const next = choosePromptDraw(entry, singleDrawPack, "main", "b");
+
+    expect(next).toBe(entry);
   });
 });

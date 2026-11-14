@@ -57,12 +57,19 @@ const HFL_PROMPTS: PackField[] = [
     required: true,
     stats: true,
   },
+  {
+    id: "story-worthy",
+    label: "What was the single most story-worthy moment of today?",
+    type: "longText",
+    required: true,
+    stats: true,
+  },
 ];
 
 export const HFL_PACK: ContentPack = {
   id: "hfl",
   name: "Homework for Life",
-  version: "3.0.0",
+  version: "3.1.0",
   description: "One random reflection plus optional mood and weather check-in.",
   hideFreeWrite: false,
   sections: [
