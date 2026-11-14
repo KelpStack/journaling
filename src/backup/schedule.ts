@@ -1,6 +1,7 @@
 import JSZip from "jszip";
+import { db } from "../db/database";
 import { listEntriesForProfile } from "../db/entriesRepo";
-import { getSettings, saveSettings } from "../db/settingsRepo";
+import { getSettings } from "../db/settingsRepo";
 import type { ProfileId, ProfileSettings } from "../domain/types";
 import { writeBackupToFolder } from "./backupFolder";
 import { notifyBackupFailure } from "./backupNotice";
@@ -121,13 +122,10 @@ export async function runBackup(
   const delivery = await deliverBackupBlob(blob, filename, profileId, options);
 
   if (delivery.ok) {
-    const settings = await getSettings(profileId);
-    if (settings) {
-      await saveSettings({
-        ...settings,
-        lastBackupAt: now.toISOString(),
-      });
-    }
+    // Patch only the timestamp so a settings edit during the backup is not overwritten.
+    await db.settings.update(profileId, {
+      lastBackupAt: now.toISOString(),
+    });
   }
 
   return delivery;

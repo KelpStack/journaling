@@ -695,8 +695,13 @@ body {
   cursor: pointer;
 }
 
-.field-prompt-picker__option:hover {
+.field-prompt-picker__option:hover:not(:disabled) {
   background: color-mix(in srgb, var(--skin-accent) 12%, transparent);
+}
+
+.field-prompt-picker__option:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .field-prompt-picker__option--active {

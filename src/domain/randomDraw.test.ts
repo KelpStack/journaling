@@ -240,7 +240,7 @@ describe("choosePromptDraw", () => {
       ],
     };
 
-    const next = choosePromptDraw(entry, singleDrawPack, "main", "c");
+    const next = choosePromptDraw(entry, singleDrawPack, "main", "a", "c");
 
     expect(next.promptDraw.prompts?.main).toEqual(["c"]);
     expect(next.answers).toEqual([{ fieldRef: "other:x", value: "keep" }]);
@@ -265,8 +265,27 @@ describe("choosePromptDraw", () => {
       ],
     };
 
-    const next = choosePromptDraw(entry, singleDrawPack, "main", "b");
+    const next = choosePromptDraw(entry, singleDrawPack, "main", "b", "b");
 
     expect(next).toBe(entry);
+  });
+
+  it("replaces one slot when several prompts are drawn and keeps the others", () => {
+    const entry = baseEntry({
+      promptDraw: { prompts: { main: ["a", "b", "c"] } },
+      answers: [
+        { fieldRef: "prompts:a", value: "clear me" },
+        { fieldRef: "prompts:b", value: "keep b" },
+        { fieldRef: "prompts:c", value: "keep c" },
+      ],
+    });
+
+    const next = choosePromptDraw(entry, randomPack, "main", "a", "e");
+
+    expect(next.promptDraw.prompts?.main).toEqual(["e", "b", "c"]);
+    expect(next.answers).toEqual([
+      { fieldRef: "prompts:b", value: "keep b" },
+      { fieldRef: "prompts:c", value: "keep c" },
+    ]);
   });
 });

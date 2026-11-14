@@ -6,6 +6,7 @@ import { getSettings, saveSettings } from "../../db/settingsRepo";
 import { queueOnEditBackup } from "../../backup/onEditBackup";
 import { applyStickyCompletion } from "../../domain/completion";
 import { isJournalDate, todayJournalDate } from "../../domain/dates";
+import { canApplySavedEntry } from "../../domain/entryDraft";
 import { applyEntrySnapshot } from "../../domain/entrySnapshot";
 import { parseFieldRef } from "../../domain/fieldRef";
 import { shouldHideFreeWrite } from "../../domain/mergePacks";
@@ -59,7 +60,7 @@ export function EntryPage() {
   const packsRef = useRef<ContentPack[]>([]);
   const settingsRef = useRef<ProfileSettings | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const saveSeqRef = useRef(0);
+  const saveChainRef = useRef<Promise<void>>(Promise.resolve());
   const scrolledFieldRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -75,32 +76,51 @@ export function EntryPage() {
   }, [settings]);
 
   const persistEntry = useCallback(async (draft: DailyEntry) => {
-    const seq = ++saveSeqRef.current;
-    setSaveState("saving");
+    const job = saveChainRef.current
+      .catch(() => undefined)
+      .then(async () => {
+        const latest = entryRef.current;
+        const source = latest && latest.id === draft.id ? latest : draft;
+        const activePacks = packsRef.current;
+        const currentSettings = settingsRef.current;
+        if (!currentSettings) {
+          return;
+        }
 
-    const activePacks = packsRef.current;
-    const currentSettings = settingsRef.current;
-    if (!currentSettings) {
-      return;
-    }
+        const viewingThisDay = () => entryRef.current?.id === source.id;
+        if (viewingThisDay()) {
+          setSaveState("saving");
+        }
 
-    const snapshotted = applyEntrySnapshot(draft, currentSettings, activePacks);
-    const completed = applyStickyCompletion(snapshotted, activePacks, {
-      requireFreeWrite: currentSettings.requireFreeWrite,
-      showFreeWrite: currentSettings.showFreeWrite !== false,
-      nowIso: new Date().toISOString(),
-    });
+        try {
+          const snapshotted = applyEntrySnapshot(source, currentSettings, activePacks);
+          const completed = applyStickyCompletion(snapshotted, activePacks, {
+            requireFreeWrite: currentSettings.requireFreeWrite,
+            showFreeWrite: currentSettings.showFreeWrite !== false,
+            nowIso: new Date().toISOString(),
+          });
 
-    await upsertEntry(completed);
+          await upsertEntry(completed);
 
-    if (seq === saveSeqRef.current) {
-      setEntry(completed);
-      entryRef.current = completed;
-      setSaveState("saved");
-      if (currentSettings?.backupOnEdit) {
-        queueOnEditBackup(PROFILE_ID);
-      }
-    }
+          if (!canApplySavedEntry(entryRef.current, source)) {
+            return;
+          }
+
+          setEntry(completed);
+          entryRef.current = completed;
+          setSaveState("saved");
+          if (currentSettings.backupOnEdit) {
+            queueOnEditBackup(PROFILE_ID);
+          }
+        } catch {
+          if (viewingThisDay()) {
+            setSaveState("idle");
+          }
+        }
+      });
+
+    saveChainRef.current = job;
+    return job;
   }, []);
 
   const scheduleSave = useCallback(
@@ -177,6 +197,8 @@ export function EntryPage() {
             await saveSettings(nextSettings);
           }
         }
+
+        if (cancelled) return;
 
         setSettings(nextSettings);
         setPacks(activePacks);
@@ -336,10 +358,11 @@ export function EntryPage() {
   const handleChoosePrompt = (
     pack: ContentPack,
     sectionId: string,
-    fieldId: string,
+    fromFieldId: string,
+    toFieldId: string,
   ) => {
     updateEntry((current) =>
-      choosePromptDraw(current, pack, sectionId, fieldId),
+      choosePromptDraw(current, pack, sectionId, fromFieldId, toFieldId),
     );
   };
 
@@ -433,8 +456,8 @@ export function EntryPage() {
           }
           onChoosePrompt={
             normalizePack(pack).sections.some((s) => s.promptMode === "random")
-              ? (sectionId, fieldId) =>
-                  handleChoosePrompt(pack, sectionId, fieldId)
+              ? (sectionId, fromFieldId, toFieldId) =>
+                  handleChoosePrompt(pack, sectionId, fromFieldId, toFieldId)
               : undefined
           }
         />

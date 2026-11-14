@@ -70,14 +70,15 @@ export function redrawPromptDraw(
 }
 
 /**
- * Sets a specific pool prompt for a random section (manual pick).
- * Clears answers for previously drawn fields in that section.
+ * Replaces one drawn prompt in a random section with another from the pool.
+ * Clears the answer for the prompt that was replaced. Other drawn prompts stay.
  */
 export function choosePromptDraw(
   entry: DailyEntry,
   pack: ContentPack,
   sectionId: string,
-  fieldId: string,
+  fromFieldId: string,
+  toFieldId: string,
 ): DailyEntry {
   const normalized = normalizePack(pack);
   const section = normalized.sections.find((s) => s.id === sectionId);
@@ -86,25 +87,31 @@ export function choosePromptDraw(
   }
 
   const pool = section.pool ?? section.fields;
-  if (!pool.some((field) => field.id === fieldId)) {
+  if (!pool.some((field) => field.id === toFieldId)) {
     return entry;
   }
 
   const packDraw = normalizePackPromptDraw(pack, entry.promptDraw[pack.id]);
   const previous = packDraw[sectionId] ?? [];
-  if (previous.length === 1 && previous[0] === fieldId) {
+  const index = previous.indexOf(fromFieldId);
+  if (index < 0 || fromFieldId === toFieldId) {
+    return entry;
+  }
+  if (previous.includes(toFieldId)) {
     return entry;
   }
 
-  const dropRefs = new Set(previous.map((id) => fieldRef(pack.id, id)));
+  const nextIds = [...previous];
+  nextIds[index] = toFieldId;
+  const dropRef = fieldRef(pack.id, fromFieldId);
 
   return {
     ...entry,
     promptDraw: {
       ...entry.promptDraw,
-      [pack.id]: { ...packDraw, [sectionId]: [fieldId] },
+      [pack.id]: { ...packDraw, [sectionId]: nextIds },
     },
-    answers: entry.answers.filter((answer) => !dropRefs.has(answer.fieldRef)),
+    answers: entry.answers.filter((answer) => answer.fieldRef !== dropRef),
   };
 }
 

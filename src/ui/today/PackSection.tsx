@@ -22,7 +22,11 @@ interface PackSectionProps {
   onToggleCollapse: () => void;
   onAnswerChange: (ref: string, value: AnswerValue | null) => void;
   onRedrawPrompt?: (sectionId: string) => void;
-  onChoosePrompt?: (sectionId: string, fieldId: string) => void;
+  onChoosePrompt?: (
+    sectionId: string,
+    fromFieldId: string,
+    toFieldId: string,
+  ) => void;
 }
 
 function answerValue(entry: DailyEntry, ref: string): AnswerValue | null {
@@ -54,9 +58,11 @@ function FieldInput({
   fieldId,
   value,
   autoFocus,
-  showPromptActions,
+  showRedraw,
+  showPicker,
   promptOptions,
   selectedPromptId,
+  takenPromptIds,
   onChange,
   onRedraw,
   onChoosePrompt,
@@ -65,9 +71,11 @@ function FieldInput({
   fieldId: string;
   value: AnswerValue | null;
   autoFocus?: boolean;
-  showPromptActions?: boolean;
+  showRedraw?: boolean;
+  showPicker?: boolean;
   promptOptions?: PackField[];
   selectedPromptId?: string;
+  takenPromptIds?: ReadonlySet<string>;
   onChange: (value: AnswerValue | null) => void;
   onRedraw?: () => void;
   onChoosePrompt?: (fieldId: string) => void;
@@ -105,24 +113,15 @@ function FieldInput({
   ) : null;
 
   const promptActions =
-    showPromptActions && (onRedraw || onChoosePrompt) ? (
+    (showRedraw && onRedraw) || (showPicker && onChoosePrompt) ? (
       <span className="field-prompt-actions" ref={actionsRef}>
-        {onRedraw ? (
+        {showRedraw && onRedraw ? (
           <button
             type="button"
             className="field-redraw"
             aria-label="Draw a different prompt"
             title="New prompt"
             onClick={() => {
-              if (
-                !confirmClearAnswer(
-                  value,
-                  field.type,
-                  "This prompt already has an answer. Redraw and clear it?",
-                )
-              ) {
-                return;
-              }
               setPickerOpen(false);
               onRedraw();
             }}
@@ -130,7 +129,7 @@ function FieldInput({
             <RefreshCw size={15} strokeWidth={1.75} aria-hidden />
           </button>
         ) : null}
-        {onChoosePrompt && promptOptions && promptOptions.length > 0 ? (
+        {showPicker && onChoosePrompt && promptOptions && promptOptions.length > 0 ? (
           <>
             <button
               type="button"
@@ -147,19 +146,22 @@ function FieldInput({
               <div id={pickerId} className="field-prompt-picker" role="listbox">
                 {promptOptions.map((option) => {
                   const selected = option.id === selectedPromptId;
+                  const taken =
+                    !selected && (takenPromptIds?.has(option.id) ?? false);
                   return (
                     <button
                       key={option.id}
                       type="button"
                       role="option"
                       aria-selected={selected}
+                      disabled={taken}
                       className={
                         selected
                           ? "field-prompt-picker__option field-prompt-picker__option--active"
                           : "field-prompt-picker__option"
                       }
                       onClick={() => {
-                        if (selected) {
+                        if (selected || taken) {
                           setPickerOpen(false);
                           return;
                         }
@@ -365,14 +367,17 @@ function SectionPanel({
   onToggleCollapse: () => void;
   onAnswerChange: (ref: string, value: AnswerValue | null) => void;
   onRedrawPrompt?: (sectionId: string) => void;
-  onChoosePrompt?: (sectionId: string, fieldId: string) => void;
+  onChoosePrompt?: (
+    sectionId: string,
+    fromFieldId: string,
+    toFieldId: string,
+  ) => void;
 }) {
   const fields = fieldsForSectionOnDay(section, packDraw[section.id]);
-  const canActOnPrompt =
-    section.promptMode === "random" && (!!onRedrawPrompt || !!onChoosePrompt);
+  const drawnIds = packDraw[section.id] ?? [];
   const promptOptions =
     section.promptMode === "random" ? (section.pool ?? section.fields) : [];
-  const selectedPromptId = packDraw[section.id]?.[0];
+  const showPickerOnEveryField = drawnIds.length > 1;
 
   return (
     <div className="pack-section__section">
@@ -400,16 +405,41 @@ function SectionPanel({
                 fieldId={`field-${ref}`}
                 value={answerValue(entry, ref)}
                 autoFocus={autoFocusFirst && index === 0}
-                showPromptActions={canActOnPrompt && index === 0}
+                showRedraw={section.promptMode === "random" && !!onRedrawPrompt && index === 0}
+                showPicker={
+                  section.promptMode === "random" &&
+                  !!onChoosePrompt &&
+                  (showPickerOnEveryField || index === 0)
+                }
                 promptOptions={promptOptions}
-                selectedPromptId={selectedPromptId}
+                selectedPromptId={field.id}
+                takenPromptIds={new Set(drawnIds.filter((id) => id !== field.id))}
                 onChange={(next) => onAnswerChange(ref, next)}
                 onRedraw={
-                  onRedrawPrompt ? () => onRedrawPrompt(section.id) : undefined
+                  onRedrawPrompt
+                    ? () => {
+                        const anyAnswered = fields.some((candidate) =>
+                          hasAnswer(
+                            answerValue(entry, fieldRef(packId, candidate.id)),
+                            candidate.type,
+                          ),
+                        );
+                        if (
+                          anyAnswered &&
+                          !window.confirm(
+                            "Redrawing will clear answers on these prompts. Continue?",
+                          )
+                        ) {
+                          return;
+                        }
+                        onRedrawPrompt(section.id);
+                      }
+                    : undefined
                 }
                 onChoosePrompt={
                   onChoosePrompt
-                    ? (fieldId) => onChoosePrompt(section.id, fieldId)
+                    ? (nextFieldId) =>
+                        onChoosePrompt(section.id, field.id, nextFieldId)
                     : undefined
                 }
               />
